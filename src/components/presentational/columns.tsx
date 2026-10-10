@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { LedgerEntry, MaterialLine, MovementType, OpenShortage, PartSummary, ReorderSuggestion, StockRow, UnmatchedReceipt } from '../../types'
 import { fmtDate } from '../../utils/text'
+import { orderLabel, reorderJustification } from '../../utils/reorder'
 
 /** Una columna = encabezado + cómo pintar la celda. Cada tabla es una lista de estas (una sola DataTable para todo). */
 export interface Column<T> { key: string; header: string; num?: boolean; mono?: boolean; render: (row: T) => ReactNode }
@@ -15,9 +16,17 @@ export const shortageColumns: Column<OpenShortage>[] = [
   { key: 'o', header: 'Orden', mono: true, render: (s) => s.work_order_code }, { key: 'n', header: 'Pieza', render: (s) => s.name },
   { key: 'm', header: 'Faltan', num: true, render: (s) => <b>{s.missing_quantity ?? '?'}</b> }, { key: 'd', header: 'Abierto', render: (s) => fmtDate(s.opened_at) },
 ]
-export const reorderColumns: Column<ReorderSuggestion>[] = [
+/** Justificación: resumen + órdenes con lo que le falta a cada una. Necesita los faltantes abiertos para traducir work_order_ids. */
+const reorderReason = (r: ReorderSuggestion, shortages: OpenShortage[]) => {
+  const j = reorderJustification(r, shortages)
+  return (
+    <span className="reason"><span>{j.summary}</span>
+      {j.orders.length > 0 && <small className="mono">{j.orders.map(orderLabel).join(', ')}</small>}</span>
+  )
+}
+export const reorderColumns = (shortages: OpenShortage[]): Column<ReorderSuggestion>[] => [
   { key: 'sku', header: 'SKU', mono: true, render: (r) => r.sku }, { key: 'n', header: 'Pieza', render: (r) => r.name },
-  { key: 'q', header: 'Comprar', num: true, render: (r) => <b>{r.suggested_quantity}</b> }, { key: 'w', header: 'Órdenes', render: (r) => r.work_order_ids.join(', ') },
+  { key: 'q', header: 'Comprar', num: true, render: (r) => <b>{r.suggested_quantity}</b> }, { key: 'w', header: 'Justificación', render: (r) => reorderReason(r, shortages) },
 ]
 export const unmatchedColumns: Column<UnmatchedReceipt>[] = [
   { key: 'pl', header: 'Línea compra', mono: true, render: (r) => r.purchase_line_id }, { key: 'pn', header: 'N° de parte', mono: true, render: (r) => r.part_number },
