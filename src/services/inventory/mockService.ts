@@ -50,11 +50,19 @@ interface SeedLine { inspection_item_id: number; bom_line_id: number; part_id: n
 const orders: Record<string, { work_order_id: number; opened_at: string; lines: SeedLine[] }> = {
   R061026012: { work_order_id: 12, opened_at: '2026-10-06T16:42:11Z', lines: [
     { inspection_item_id: 901, bom_line_id: 41, part_id: 305, name: 'Rodamiento 7205 B', required: 7, reserved: 4 },
-    { inspection_item_id: 904, bom_line_id: 42, part_id: 301, name: 'Sello de labio 35x52', required: 4, reserved: 4 }] },
+    { inspection_item_id: 904, bom_line_id: 42, part_id: 301, name: 'Sello de labio 35x52', required: 4, reserved: 4 },
+    { inspection_item_id: 906, bom_line_id: 45, part_id: 302, name: 'Carbón de motor 12x10', required: 4, reserved: 4 },
+    { inspection_item_id: 907, bom_line_id: 46, part_id: 306, name: 'Banda de husillo HS', required: 1, reserved: 0 }] },
   R061026014: { work_order_id: 14, opened_at: '2026-10-07T09:10:00Z', lines: [
     { inspection_item_id: 902, bom_line_id: 43, part_id: 303, name: 'Tarjeta driver DC 24V', required: 5, reserved: 3 },
-    { inspection_item_id: 905, bom_line_id: 44, part_id: 307, name: 'Grasa EP2 (cartucho)', required: 2, reserved: 2 }] },
+    { inspection_item_id: 905, bom_line_id: 44, part_id: 307, name: 'Grasa EP2 (cartucho)', required: 2, reserved: 2 },
+    { inspection_item_id: 908, bom_line_id: 47, part_id: 304, name: 'Capacitor 470µF 25V', required: 10, reserved: 10 },
+    { inspection_item_id: 909, bom_line_id: 48, part_id: 308, name: 'Filtro hidráulico', required: 2, reserved: 2 }] },
 }
+// Entregas ya hechas contra las órdenes (salidas con reference = código), así "Entregadas" no arranca vacía
+;([['R061026012', 302, 2], ['R061026014', 307, 2], ['R061026014', 304, 4]] as const).forEach(([code, id, q], k) => {
+  mv('issue', id, 101, -q, code, 180 - 30 * k); addStock(id, 101, -q)
+})
 const issuedFor = (code: string, pid: number) => -movements.filter((m) => m.type === 'issue' && m.reference === code && m.part_id === pid).reduce((s, m) => s + m.quantity, 0)
 const lineState = (code: string, l: SeedLine) => { // misma fórmula del README: missing = max(required − reserved − issued, 0)
   const issued = issuedFor(code, l.part_id); const reserved = Math.max(0, l.reserved - issued)
@@ -119,7 +127,7 @@ export const mockInventoryService: InventoryService = {
   listUnmatched: () => wait(() => unmatched.filter((r) => !resolved.has(r.id))),
   getWorkOrderMaterials: (code) => wait(() => {
     const o = must(orders[code], 'Orden no encontrada')
-    return { work_order_code: code, items: o.lines.map((l) => ({ inspection_item_id: l.inspection_item_id, bom_line_id: l.bom_line_id, part_id: l.part_id, name: l.name, required: l.required, ...lineState(code, l) })) }
+    return { work_order_id: o.work_order_id, code, deleted: false, lines: o.lines.map((l) => ({ inspection_item_id: l.inspection_item_id, bom_line_id: l.bom_line_id, part_id: l.part_id, name: l.name, required: l.required, ...lineState(code, l) })) }
   }),
   issue: (r) => wait(() => {
     const o = must(orders[r.work_order_code], 'Orden no encontrada'); part(r.part_id); loc(r.location_id)

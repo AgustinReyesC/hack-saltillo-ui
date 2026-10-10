@@ -44,12 +44,15 @@ export interface UnmatchedReceipt {
   id: number | string; purchase_line_id: number; part_number: string; description: string; quantity: number; unit_price: string
 }
 
-/** GET /work-orders/{code}/materials. Una línea por bom_line_id. SUPUESTO: la envoltura es { work_order_code, items }. */
+/** GET /work-orders/{code}/materials (WorkOrderMaterials de openapi.yaml). Una línea por bom_line_id. */
 export interface MaterialLine {
   inspection_item_id: number; bom_line_id: number; part_id: number | null; name: string
   required: number | null; reserved: number; issued: number; missing: number | null // missing = max(required − reserved − issued, 0)
 }
-export interface WorkOrderMaterials { work_order_code: string; items: MaterialLine[] }
+export interface WorkOrderMaterials {
+  work_order_id: number; code: string; lines: MaterialLine[]
+  deleted?: boolean // extra de la API: orden dada de baja ⇒ reserved = 0 y missing = 0
+}
 
 /** Cuerpos de los comandos HTTP (§7). */
 export interface IssueRequest { work_order_code: string; part_id: number; location_id: number; quantity: number; issued_by: string | number }
