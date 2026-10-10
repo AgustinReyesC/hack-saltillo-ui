@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { Cog, MapPin } from 'lucide-react'
 import { useWarehouse } from '../context/WarehouseContext'
 import { useFloorFlow } from '../hooks/useFloorFlow'
 import { BarcodeScanner } from '../components/presentational/BarcodeScanner'
@@ -61,8 +62,8 @@ export function FloorView() {
 
       {/* 3. Estado actual: lo escaneado + el resultado de la validación */}
       <section className="scan-status">
-        <p>📍 Ubicación actual: <b className="mono">{scannedLocation || 'Ninguna'}</b></p>
-        <p>⚙️ Pieza escaneada: <b className="mono">{scannedPart || 'Ninguna'}</b></p>
+        <p><MapPin size={16} aria-hidden="true" /><span>Ubicación actual: <b className="mono">{scannedLocation || 'Ninguna'}</b></span></p>
+        <p><Cog size={16} aria-hidden="true" /><span>Pieza escaneada: <b className="mono">{scannedPart || 'Ninguna'}</b></span></p>
       </section>
       {f.feedback && <p className={`feedback ${f.feedback.ok ? 'ok' : 'bad'}`}>{f.feedback.text}</p>}
 

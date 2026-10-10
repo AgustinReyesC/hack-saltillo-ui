@@ -19,7 +19,7 @@ export function WorkOrderView() {
       {!code && <p className="muted">Escribe un código de orden para ver sus materiales.</p>}
       {loading && <p className="muted">Buscando…</p>}
       {error && <ErrorText>{error}</ErrorText>}
-      {data && <><h2 className="mono order-title">{data.work_order_code}</h2><WorkOrderTables data={data} /></>}
+      {data && <><h2 className="mono order-title">{data.code}</h2><WorkOrderTables data={data} /></>}
     </>
   )
 }

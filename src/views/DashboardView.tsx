@@ -38,7 +38,7 @@ export function DashboardView() {
           <DataTable rows={shortages} columns={shortageColumns} rowKey={(s) => `${s.work_order_id}-${s.inspection_item_id}`} onRowClick={(s) => navigate(`/ordenes/${s.work_order_code}`)} empty="Sin faltantes" />
         </Section>
         <Section title="Sugerencias de compra" tone="warn" count={reorders.length}>
-          <DataTable rows={reorders} columns={reorderColumns} rowKey={(r) => r.part_id} onRowClick={setKardex} empty="Nada por comprar" />
+          <DataTable rows={reorders} columns={reorderColumns(shortages)}rowKey={(r) => r.part_id} onRowClick={setKardex} empty="Nada por comprar" />
         </Section>
       </div>
       {kardex && <KardexContainer part={kardex} onClose={() => setKardex(null)} />}
