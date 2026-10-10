@@ -1,9 +1,6 @@
-/** Direcciones de las 3 APIs. Vienen de .env para no escribirlas "a mano" en los componentes. */
-export const API = {
-  inventory: import.meta.env.VITE_INVENTORY_URL as string, // servicio de inventario (:8000)
-  events: import.meta.env.VITE_EVENTS_URL as string,       // API de eventos / simulador
-  chat: import.meta.env.VITE_CHAT_URL as string,           // API del chatbot
-}
-
-/** Interruptor de datos de prueba. Con `VITE_USE_MOCKS=false` la app usa las APIs reales. */
+/** Interruptor ÚNICO mocks ↔ API real. Cambia VITE_USE_MOCKS en .env y reinicia `npm run dev`. */
 export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false'
+export const API = {
+  base: import.meta.env.VITE_API_URL as string,   // API de inventario (API_README §7-8)
+  chat: import.meta.env.VITE_CHAT_URL as string,  // API del agente/chatbot
+}
