@@ -1,0 +1,31 @@
+/* Fondo BLANCO. Amarillo/verde/negro solo en botones, íconos, encabezados, bordes y acentos. */
+:root{--black:#0a0a0a;--yellow:#f5e62e;--green:#00a844;--green-d:#007a32;--bg:#fff;--line:#d9e2d9;--muted:#6b776b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--black);font-family:system-ui,sans-serif}
+/* Encabezado negro: el logo es amarillo, solo se ve sobre oscuro */
+.header{display:flex;align-items:center;gap:16px;padding:10px 20px;background:var(--black);border-bottom:4px solid var(--green)}
+.header-left{min-width:44px}.logo{height:42px}.tagline{color:var(--yellow);font-weight:600}
+.main{padding:20px;max-width:1100px;margin:0 auto}
+.card{background:#fff;border:2px solid var(--green);border-radius:10px;padding:16px}
+h2{margin:0;font-size:20px;border-left:6px solid var(--yellow);padding-left:10px}.count{font-weight:400;color:var(--muted);font-size:14px}
+.row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+button{background:var(--green);color:#fff;border:0;border-radius:6px;padding:8px 14px;font-weight:700;cursor:pointer}button:hover{background:var(--green-d)}button:disabled{opacity:.5}
+button.small{padding:4px 10px;font-size:12px}
+.search{flex:1;min-width:220px;max-width:420px;padding:9px 12px;border:2px solid var(--black);border-radius:8px;font-size:15px}.search:focus{outline:3px solid var(--yellow)}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:var(--black);color:var(--yellow);text-align:left;padding:8px;white-space:nowrap}td{padding:8px;border-bottom:1px solid var(--line)}
+tbody tr:hover{background:#fffbd0}
+.pill{padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700}.pill.ok{background:var(--green);color:#fff}.pill.low{background:var(--yellow);color:#000}.pill.out{background:var(--black);color:var(--yellow)}
+.muted{color:var(--muted)}.error{color:#a00}
+/* Campana arriba-izquierda */
+.bell-wrap{position:relative}.bell{position:relative;background:var(--yellow);color:#000;font-size:20px;padding:6px 10px}.bell:hover{background:#fff27a}
+.badge{position:absolute;top:-8px;right:-8px;background:var(--green);color:#fff;border-radius:10px;font-size:11px;padding:1px 6px;border:2px solid var(--black)}
+.dropdown{position:absolute;top:calc(100% + 8px);left:0;width:min(340px,90vw);max-height:60vh;overflow:auto;background:#fff;border:2px solid var(--green);border-radius:10px;padding:12px;z-index:20;box-shadow:0 8px 24px #0003}
+.dropdown h2{font-size:16px}.notifs{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.notif{display:flex;flex-direction:column;padding:8px 10px;border-left:5px solid var(--muted);background:#f6f8f6;font-size:13px}.notif.warning{border-color:var(--yellow)}.notif.success{border-color:var(--green)}.notif small{color:var(--muted)}
+/* Chat flotante abajo-derecha */
+.fab{position:fixed;right:20px;bottom:20px;width:56px;height:56px;border-radius:50%;font-size:24px;padding:0;background:var(--black);color:var(--yellow);border:3px solid var(--green);z-index:30}.fab:hover{background:#222}
+.chat-window{position:fixed;right:20px;bottom:90px;width:min(340px,92vw);height:420px;background:#fff;border:2px solid var(--green);border-radius:12px;display:flex;flex-direction:column;overflow:hidden;z-index:30;box-shadow:0 8px 24px #0004}
+.chat-head{display:flex;justify-content:space-between;align-items:center;background:var(--black);color:var(--yellow);padding:10px 14px;font-weight:700}.x{background:none;color:var(--yellow);padding:2px 8px}.x:hover{background:#222}
+.messages{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
+.bubble{margin:0;padding:8px 12px;border-radius:12px;max-width:85%;font-size:14px}.bubble.user{align-self:flex-end;background:var(--green);color:#fff}.bubble.bot{background:#fff9b0}
+.chat-form{display:flex;gap:6px;padding:10px;border-top:2px solid var(--line)}.chat-form input{flex:1;padding:8px;border:2px solid var(--black);border-radius:6px}
