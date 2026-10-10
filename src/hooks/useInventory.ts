@@ -1,30 +1,29 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { InventoryItem } from '../types'
-import { fetchParts } from '../services/inventoryApi'
-import { USE_MOCKS } from '../services/config'
-import { mockInventory } from '../mocks/inventoryMock'
+import type { OpenShortage, PartSummary, ReorderSuggestion, UnmatchedReceipt } from '../types'
+import { inventoryService } from '../services/inventory'
 import { useEvents } from '../context/EventsContext'
 
-/** Lógica de datos del inventario (solo "Read"). Con mocks no toca la red. */
+interface InventoryData { parts: PartSummary[]; shortages: OpenShortage[]; reorders: ReorderSuggestion[]; unmatched: UnmatchedReceipt[] }
+
+/** Datos del panel. Solo conoce `inventoryService`: nunca sabe si son mocks o API real. */
 export function useInventory() {
   const events = useEvents()
-  const [items, setItems] = useState<InventoryItem[]>(USE_MOCKS ? mockInventory : []) // filas de la tabla
-  const [loading, setLoading] = useState(!USE_MOCKS)                                  // ¿cargando?
-  const [error, setError] = useState<string | null>(null)                             // error de red
+  const [data, setData] = useState<InventoryData>({ parts: [], shortages: [], reorders: [], unmatched: [] }) // todo el dataset
+  const [loading, setLoading] = useState(true)               // primera carga
+  const [error, setError] = useState<string | null>(null)    // mensaje {detail} de la API
 
   const load = useCallback(async () => {
-    if (USE_MOCKS) return
-    try { setItems(await fetchParts()); setError(null) }
-    catch (e) { setError((e as Error).message) }
-    finally { setLoading(false) }
+    try {
+      const [parts, shortages, reorders, unmatched] = await Promise.all([
+        inventoryService.listParts(), inventoryService.listShortages(),
+        inventoryService.listReorders(), inventoryService.listUnmatched()])
+      setData({ parts, shortages, reorders, unmatched }); setError(null)
+    } catch (e) { setError((e as Error).message) } finally { setLoading(false) }
   }, [])
 
-  useEffect(() => { load() }, [load])                    // carga inicial
-
+  useEffect(() => { load() }, [load])                        // carga inicial
   const latest = events[0]
-  useEffect(() => {                                      // un evento stock.* ⇒ recargar tabla
-    if (latest?.event_type.startsWith('stock.')) load()
-  }, [latest?.event_id, load]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  return { items, loading, error }
+  useEffect(() => { if (latest?.event_type.startsWith('stock.')) load() },   // evento stock.* ⇒ refrescar
+    [latest?.event_id, load]) // eslint-disable-line react-hooks/exhaustive-deps
+  return { ...data, loading, error }
 }

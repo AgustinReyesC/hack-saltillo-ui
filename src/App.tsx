@@ -1,15 +1,16 @@
 import { EventsProvider } from './context/EventsContext'
-import { Header } from './components/presentational/Header'
-import { NotificationsContainer } from './components/containers/NotificationsContainer'
+import { SidebarContainer } from './components/containers/SidebarContainer'
 import { InventoryContainer } from './components/containers/InventoryContainer'
 import { ChatContainer } from './components/containers/ChatContainer'
 
-/** App ya no guarda estado: solo arma el layout. Cada contenedor maneja lo suyo. */
+/** Solo layout: sidebar colapsable + contenido + chat flotante. */
 export default function App() {
   return (
     <EventsProvider>
-      <Header logoSrc="/assets/logo.png" left={<NotificationsContainer />} />
-      <main className="main"><InventoryContainer /></main>
+      <div className="shell">
+        <SidebarContainer />
+        <main className="content"><InventoryContainer /></main>
+      </div>
       <ChatContainer />
     </EventsProvider>
   )
