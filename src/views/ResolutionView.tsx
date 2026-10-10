@@ -1,3 +1,5 @@
+import { ErrorText } from '../components/presentational/ErrorText'
+import { Feedback } from '../components/presentational/Feedback'
 import { useMemo, useState } from 'react'
 import { useWarehouse } from '../context/WarehouseContext'
 import { inventoryService } from '../services/inventory'
@@ -33,10 +35,10 @@ export function ResolutionView() {
   return (
     <>
       <div className="page-head"><h1>Resolución de recepciones</h1></div>
-      {msg && <p className={`feedback ${msg.ok ? 'ok' : 'bad'}`}>{msg.text}</p>}
-      {error && <p className="error">⚠ {error}</p>}
+      {msg && <Feedback ok={msg.ok} text={msg.text} />}
+      {error && <ErrorText>{error}</ErrorText>}
       <Section title="Recepciones sin relacionar" tone="warn" count={unmatched.length}>
-        {loading ? <p className="muted pad">Cargando…</p> : <DataTable rows={unmatched} columns={unmatchedColumns} rowKey={(r) => r.id} onRowClick={(r) => choose(r.id)} selectedKey={selectedId} empty="No hay recepciones pendientes ✔" />}
+        {loading ? <p className="muted pad">Cargando…</p> : <DataTable rows={unmatched} columns={unmatchedColumns} rowKey={(r) => r.id} onRowClick={(r) => choose(r.id)} selectedKey={selectedId} empty="No hay recepciones pendientes" />}
       </Section>
       {receipt && <ResolvePanel receipt={receipt} query={query} onQuery={setQuery} results={results} partId={partId} onPart={setPartId}
         locations={locations} locationId={locationId} onLocation={setLocationId} busy={busy} onConfirm={confirm} onCancel={() => setSelectedId(null)} />}

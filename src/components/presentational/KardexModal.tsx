@@ -1,3 +1,5 @@
+import { X } from 'lucide-react'
+import { ErrorText } from './ErrorText'
 import type { LedgerEntry } from '../../types'
 import { DataTable } from './DataTable'
 import { ledgerColumns } from './columns'
@@ -7,8 +9,8 @@ export function KardexModal({ title, subtitle, entries, codeOf, loading, error, 
   return (
     <div className="backdrop" onClick={onClose}>
       <div className="modal wide" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-head"><div><small className="mono">{subtitle}</small><h2>Kardex · {title}</h2></div><button className="x" onClick={onClose} aria-label="Cerrar">✕</button></div>
-        {loading && <p className="muted">Cargando…</p>}{error && <p className="error">⚠ {error}</p>}
+        <div className="modal-head"><div><small className="mono">{subtitle}</small><h2>Kardex · {title}</h2></div><button className="x" onClick={onClose} aria-label="Cerrar"><X size={18} aria-hidden="true" /></button></div>
+        {loading && <p className="muted">Cargando…</p>}{error && <ErrorText>{error}</ErrorText>}
         {!loading && !error && <DataTable rows={entries} columns={ledgerColumns(codeOf)} rowKey={(e) => e.movement_id} empty="Sin movimientos." />}
       </div>
     </div>

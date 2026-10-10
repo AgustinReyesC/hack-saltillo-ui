@@ -13,7 +13,7 @@ export function WorkOrderTables({ data }: { data: WorkOrderMaterials }) {
     <div className="grid3">
       <Section title="Reservadas" tone="ok" count={reserved.length}><DataTable rows={reserved} columns={materialColumns('Reservado', (l) => l.reserved)} rowKey={key} empty="Nada reservado." /></Section>
       <Section title="Entregadas" count={issued.length}><DataTable rows={issued} columns={materialColumns('Entregado', (l) => l.issued)} rowKey={key} empty="Nada entregado aún." /></Section>
-      <Section title="Pendientes (faltantes)" tone="warn" count={pending.length}><DataTable rows={pending} columns={materialColumns('Faltan', (l) => l.missing)} rowKey={key} empty="Sin faltantes ✔" /></Section>
+      <Section title="Pendientes (faltantes)" tone="warn" count={pending.length}><DataTable rows={pending} columns={materialColumns('Faltan', (l) => l.missing)} rowKey={key} empty="Sin faltantes" /></Section>
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import { ErrorText } from '../components/presentational/ErrorText'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useWarehouse } from '../context/WarehouseContext'
@@ -27,17 +28,17 @@ export function DashboardView() {
         { label: 'Piezas en catálogo', value: parts.length, tone: 'neutral' }, { label: 'Con existencia', value: parts.filter((p) => p.on_hand > 0).length, tone: 'ok' },
         { label: 'Sin existencia', value: parts.filter((p) => p.on_hand === 0).length, tone: 'warn' }, { label: 'Faltantes abiertos', value: shortages.length, tone: 'warn' },
         { label: 'Sin relacionar', value: unmatched.length, tone: 'warn' }]} />
-      {(error || stockError) && <p className="error">⚠ {error ?? stockError}</p>}
+      {(error || stockError) && <ErrorText>{error ?? stockError}</ErrorText>}
       <Section title="Existencias por pieza y ubicación" count={filtered.length}>
         {loading ? <p className="muted pad">Cargando…</p>
           : <DataTable rows={filtered} columns={stockColumns} rowKey={(r) => `${r.part_id}-${r.location_id}`} onRowClick={setKardex} empty="Sin resultados." />}
       </Section>
       <div className="grid2">
         <Section title="Faltantes abiertos" tone="warn" count={shortages.length}>
-          <DataTable rows={shortages} columns={shortageColumns} rowKey={(s) => `${s.work_order_id}-${s.inspection_item_id}`} onRowClick={(s) => navigate(`/ordenes/${s.work_order_code}`)} empty="Sin faltantes ✔" />
+          <DataTable rows={shortages} columns={shortageColumns} rowKey={(s) => `${s.work_order_id}-${s.inspection_item_id}`} onRowClick={(s) => navigate(`/ordenes/${s.work_order_code}`)} empty="Sin faltantes" />
         </Section>
         <Section title="Sugerencias de compra" tone="warn" count={reorders.length}>
-          <DataTable rows={reorders} columns={reorderColumns} rowKey={(r) => r.part_id} onRowClick={setKardex} empty="Nada por comprar ✔" />
+          <DataTable rows={reorders} columns={reorderColumns} rowKey={(r) => r.part_id} onRowClick={setKardex} empty="Nada por comprar" />
         </Section>
       </div>
       {kardex && <KardexContainer part={kardex} onClose={() => setKardex(null)} />}
