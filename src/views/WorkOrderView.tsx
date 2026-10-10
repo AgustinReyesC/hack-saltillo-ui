@@ -1,3 +1,4 @@
+import { ErrorText } from '../components/presentational/ErrorText'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useWorkOrder } from '../hooks/useWorkOrder'
@@ -17,7 +18,7 @@ export function WorkOrderView() {
         <OrderSearchForm value={text} onChange={setText} onSearch={() => navigate(`/ordenes/${text.trim()}`)} /></div>
       {!code && <p className="muted">Escribe un código de orden para ver sus materiales.</p>}
       {loading && <p className="muted">Buscando…</p>}
-      {error && <p className="error">⚠ {error}</p>}
+      {error && <ErrorText>{error}</ErrorText>}
       {data && <><h2 className="mono order-title">{data.work_order_code}</h2><WorkOrderTables data={data} /></>}
     </>
   )

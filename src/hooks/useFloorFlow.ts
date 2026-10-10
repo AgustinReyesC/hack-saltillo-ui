@@ -3,7 +3,7 @@ import type { FloorAction, FloorForm, Location, PartSummary } from '../types'
 import { inventoryService } from '../services/inventory'
 
 const EMPTY: FloorForm = { quantity: '1', order: '', toLocationId: '', reason: 'Conteo cíclico' }
-const LOCATION_RE = /^U-/i // las etiquetas de ubicación son U-100, U-101… ; todo lo demás se trata como SKU de pieza
+const LOCATION_RE = /^U-\d+$/i // las etiquetas de ubicación son U-100, U-101… ; todo lo demás se trata como SKU de pieza
 
 /** Máquina de estados de la pantalla de piso: escanear ubicación + pieza → elegir acción → confirmar. */
 export function useFloorFlow(locations: Location[], onChanged: () => void) {
@@ -47,7 +47,7 @@ export function useFloorFlow(locations: Location[], onChanged: () => void) {
       if (action === 'issue') await inventoryService.issue({ work_order_code: form.order.trim().toUpperCase(), part_id: part.part_id, location_id: location.location_id, quantity: qty, issued_by: 'piso' })
       else if (action === 'transfer') await inventoryService.transfer({ part_id: part.part_id, from_location_id: location.location_id, to_location_id: Number(form.toLocationId), quantity: qty })
       else await inventoryService.count({ location_id: location.location_id, reason: form.reason, lines: [{ part_id: part.part_id, counted_quantity: qty }] })
-      setFeedback({ ok: true, text: 'Operación registrada ✔' }); setAction(null); setForm(EMPTY)
+      setFeedback({ ok: true, text: 'Operación registrada' }); setAction(null); setForm(EMPTY)
       await refreshHere(part, location); onChanged() // refresca la existencia mostrada y los datos compartidos
     } catch (e) { setFeedback({ ok: false, text: (e as Error).message }) } // {detail} del servidor: 404 / 409 / 422
     finally { setBusy(false) }
