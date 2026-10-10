@@ -11,6 +11,11 @@ node_modules
 dist
 dist-ssr
 *.local
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/tfplan
+terraform/crash.log
 
 # Editor directories and files
 .vscode/*
