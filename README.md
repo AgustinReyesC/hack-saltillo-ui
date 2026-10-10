@@ -108,4 +108,4 @@ gh secret set role_arn --body "$(terraform -chdir=terraform output -raw role_arn
 gh secret set tf_bucket_name --body "$(terraform -chdir=terraform output -raw tf_bucket_name)"
 ```
 
-Después del primer push a `main`, el sitio estará disponible en el output `cloudfront_url`. El rol OIDC solo acepta ejecuciones de este repositorio en la rama `main`.
+Después del primer push a `main`, el sitio estará disponible en el output `cloudfront_url`. El rol OIDC acepta ejecuciones desde cualquier rama de este repositorio.

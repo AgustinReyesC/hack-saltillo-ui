@@ -9,9 +9,3 @@ variable "github_repository" {
   type        = string
   default     = "AgustinReyesC/hack-saltillo-ui"
 }
-
-variable "github_branch" {
-  description = "Branch allowed to deploy through GitHub Actions OIDC."
-  type        = string
-  default     = "main"
-}
