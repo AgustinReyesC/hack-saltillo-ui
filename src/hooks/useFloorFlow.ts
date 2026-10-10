@@ -3,7 +3,7 @@ import type { FloorAction, FloorForm, Location, PartSummary } from '../types'
 import { inventoryService } from '../services/inventory'
 
 const EMPTY: FloorForm = { quantity: '1', order: '', toLocationId: '', reason: 'Conteo cíclico' }
-const LOCATION_RE = /^U-\d+$/i // las etiquetas de ubicación son U-100, U-101… ; todo lo demás se trata como SKU de pieza
+const LOCATION_RE = /^U-/i // las etiquetas de ubicación son U-100, U-101… ; todo lo demás se trata como SKU de pieza
 
 /** Máquina de estados de la pantalla de piso: escanear ubicación + pieza → elegir acción → confirmar. */
 export function useFloorFlow(locations: Location[], onChanged: () => void) {
