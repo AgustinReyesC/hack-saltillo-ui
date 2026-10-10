@@ -1,23 +1,22 @@
 import { useState } from 'react'
-import { useNotifications } from '../../hooks/useNotifications'
+import { useNavigate } from 'react-router-dom'
+import { useAlerts } from '../../hooks/useAlerts'
 import { NotificationBell } from '../presentational/NotificationBell'
 import { NotificationPanel } from '../presentational/NotificationPanel'
 import { NotificationModal } from '../presentational/NotificationModal'
 
 export function NotificationsContainer() {
-  const { items, unread, markRead, markAllRead, dismiss } = useNotifications()
-  const [open, setOpen] = useState(false)                      // ¿panel desplegable visible?
-  const [selectedId, setSelectedId] = useState<string | null>(null) // notificación abierta en el modal (null = ninguna)
-
-  // Guardamos solo el ID y buscamos el objeto en la lista viva: si se descarta, `selected` queda null y el modal desaparece solo.
-  const selected = items.find((n) => n.id === selectedId) ?? null
-
+  const items = useAlerts()                                       // alertas calculadas del estado del servidor
+  const navigate = useNavigate()
+  const [open, setOpen] = useState(false)                         // panel desplegable
+  const [selectedId, setSelectedId] = useState<string | null>(null) // alerta abierta en el modal
+  const selected = items.find((n) => n.id === selectedId) ?? null // si se resuelve mientras está abierta, el modal se cierra solo
   return (
     <div className="bell-wrap">
-      <NotificationBell count={unread} onClick={() => setOpen(!open)} />
-      {open && <NotificationPanel items={items} onMarkRead={markAllRead} onDismiss={dismiss}
-        onOpen={(id) => { setSelectedId(id); markRead(id) }} /* abrir = ver detalle + marcar leída */ />}
-      {selected && <NotificationModal notification={selected} onClose={() => setSelectedId(null)} />}
+      <NotificationBell count={items.length} onClick={() => setOpen(!open)} />
+      {open && <NotificationPanel items={items} onOpen={setSelectedId} />}
+      {selected && <NotificationModal alert={selected} onClose={() => setSelectedId(null)}
+        onGo={() => { navigate(selected.to); setSelectedId(null); setOpen(false) }} />}
     </div>
   )
 }
