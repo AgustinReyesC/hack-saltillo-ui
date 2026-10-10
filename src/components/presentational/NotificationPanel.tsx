@@ -1,20 +1,16 @@
-import type { AppNotification } from '../../types'
+import type { AppAlert } from '../../types'
+import { fmtDate } from '../../utils/text'
 
-/** Lista desplegable. Clic en la fila → onOpen (abre modal). 🗑 → onDismiss (la descarta). */
-interface Props { items: AppNotification[]; onOpen: (id: string) => void; onDismiss: (id: string) => void; onMarkRead: () => void }
-
-export function NotificationPanel({ items, onOpen, onDismiss, onMarkRead }: Props) {
+/** Centro de alertas. A propósito NO hay botón de descartar: cada alerta desaparece cuando se resuelve en el servidor. */
+interface Props { items: AppAlert[]; onOpen: (id: string) => void }
+export function NotificationPanel({ items, onOpen }: Props) {
   return (
     <div className="dropdown">
-      <div className="row"><h2>Notificaciones</h2><button className="small" onClick={onMarkRead}>Marcar leídas</button></div>
-      {items.length === 0 && <p className="muted">No hay notificaciones.</p>}
+      <div className="row"><h2>Alertas</h2><span className="muted">{items.length} activas</span></div>
+      {items.length === 0 && <p className="muted">Todo surtido y relacionado ✔</p>}
       <ul className="notifs">{items.map((n) => (
-        <li key={n.id} className={`notif ${n.level} ${n.read ? '' : 'unread'}`}>
-          <button className="notif-main" onClick={() => onOpen(n.id)}>
-            <strong>{!n.read && <i className="dot" />}{n.title}</strong><span>{n.detail}</span>
-            <small>{new Date(n.at).toLocaleString()}</small>
-          </button>
-          <button className="trash" onClick={() => onDismiss(n.id)} aria-label="Descartar notificación" title="Descartar">🗑</button>
+        <li key={n.id} className={`notif ${n.level === 'warning' ? 'warning' : 'info'}`}>
+          <button className="notif-main" onClick={() => onOpen(n.id)}><strong>{n.title}</strong><span>{n.detail}</span><small>{fmtDate(n.at)}</small></button>
         </li>))}
       </ul>
     </div>

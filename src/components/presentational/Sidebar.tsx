@@ -1,28 +1,26 @@
 import type { ReactNode } from 'react'
+import { NavLink } from 'react-router-dom'
 
-/**
- * Sidebar COLAPSABLE. No guarda estado: recibe `collapsed` y avisa con `onToggle`.
- * `top` = hueco para la campana, que se queda visible aunque el menú esté colapsado.
- */
-interface Props { logoSrc: string; collapsed: boolean; onToggle: () => void; top: ReactNode }
+/** Menú lateral COLAPSABLE con navegación por rutas. Sin estado propio: recibe `collapsed` y avisa con onToggle. */
+interface Props { logoSrc: string; collapsed: boolean; onToggle: () => void; top: ReactNode; badges?: Record<string, number> }
 const NAV = [
-  { icon: '📦', label: 'Inventario', active: true },
-  { icon: '⚠️', label: 'Faltantes' }, { icon: '🛒', label: 'Reabasto' },
-  { icon: '🧾', label: 'Sin relacionar' }, { icon: '🛠️', label: 'Órdenes' },
+  { to: '/', icon: '📊', label: 'Dashboard', end: true }, { to: '/piso', icon: '📱', label: 'Piso' },
+  { to: '/ordenes', icon: '🛠️', label: 'Órdenes' }, { to: '/resolucion', icon: '🧾', label: 'Resolución' },
 ]
-export function Sidebar({ logoSrc, collapsed, onToggle, top }: Props) {
+export function Sidebar({ logoSrc, collapsed, onToggle, top, badges = {} }: Props) {
   return (
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
       <div className="side-top">
         <button className="burger" onClick={onToggle} aria-label={collapsed ? 'Mostrar menú' : 'Ocultar menú'} aria-expanded={!collapsed}>☰</button>
-        {!collapsed && <img src={logoSrc} alt="Roceel" className="logo" />} {/* colapsado: se quita el logo */}
+        {!collapsed && <img src={logoSrc} alt="Roceel" className="logo" />}
         {top}
       </div>
       <nav>{NAV.map((n) => (
-        <button key={n.label} className={`nav ${n.active ? 'active' : ''}`} disabled={!n.active}
-                title={collapsed ? n.label : n.active ? '' : 'Próximamente'}>
-          <span>{n.icon}</span>{!collapsed && <span>{n.label}</span>} {/* colapsado: solo el ícono */}
-        </button>))}
+        // NavLink = <a> que no recarga la página y sabe si su ruta está activa (isActive)
+        <NavLink key={n.to} to={n.to} end={n.end} title={collapsed ? n.label : ''} className={({ isActive }) => `nav ${isActive ? 'active' : ''}`}>
+          <span>{n.icon}</span>{!collapsed && <span>{n.label}</span>}
+          {!!badges[n.to] && <b className="nbadge">{badges[n.to]}</b>}
+        </NavLink>))}
       </nav>
     </aside>
   )

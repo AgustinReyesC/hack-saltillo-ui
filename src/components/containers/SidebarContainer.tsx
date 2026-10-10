@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Sidebar } from '../presentational/Sidebar'
 import { NotificationsContainer } from './NotificationsContainer'
+import { useWarehouse } from '../../context/WarehouseContext'
 
-/** Dueño del estado "¿colapsado?". El layout se ajusta solo porque .content usa flex:1. */
 export function SidebarContainer() {
-  const [collapsed, setCollapsed] = useState(false) // false = menú visible
-  return <Sidebar logoSrc="/assets/logo.png" collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} top={<NotificationsContainer />} />
+  const { unmatched } = useWarehouse()
+  const [collapsed, setCollapsed] = useState(() => window.innerWidth < 800) // en celular arranca colapsado
+  return <Sidebar logoSrc="/assets/logo.png" collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)}
+    top={<NotificationsContainer />} badges={{ '/resolucion': unmatched.length }} />
 }
