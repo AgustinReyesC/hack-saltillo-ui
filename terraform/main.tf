@@ -123,6 +123,30 @@ resource "aws_cloudfront_function" "api_prefix" {
   EOT
 }
 
+# El panel del simulador pide contraseña (Basic Auth). CloudFront solo reenvía `Authorization` en
+# los GET si va en la llave de caché; con TTL 0 y `no-store` del panel no se cachea nada.
+resource "aws_cloudfront_cache_policy" "simulator" {
+  name        = "${var.name_prefix}-simulator"
+  min_ttl     = 0
+  default_ttl = 0
+  max_ttl     = 1
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    cookies_config {
+      cookie_behavior = "none"
+    }
+    headers_config {
+      header_behavior = "whitelist"
+      headers {
+        items = ["Authorization"]
+      }
+    }
+    query_strings_config {
+      query_string_behavior = "all"
+    }
+  }
+}
+
 resource "aws_cloudfront_distribution" "site" {
   enabled             = true
   default_root_object = "index.html"
@@ -184,6 +208,18 @@ resource "aws_cloudfront_distribution" "site" {
       event_type   = "viewer-request"
       function_arn = aws_cloudfront_function.api_prefix.arn
     }
+  }
+
+  # Panel del simulador (ECS, repo hack-saltillo-broker): el ALB lo enruta por /simulador*.
+  ordered_cache_behavior {
+    path_pattern             = "/simulador*"
+    allowed_methods          = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods           = ["GET", "HEAD"]
+    target_origin_id         = "api-alb"
+    viewer_protocol_policy   = "redirect-to-https"
+    compress                 = true
+    cache_policy_id          = aws_cloudfront_cache_policy.simulator.id
+    origin_request_policy_id = "b689b0a8-53d0-40ab-baf2-68738e2966ac" # Managed-AllViewerExceptHostHeader
   }
 
   restrictions {
