@@ -1,0 +1,67 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Configure Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.5
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.role_arn }}
+          aws-region: us-east-1
+
+      - name: Initialize Terraform state
+        working-directory: terraform
+        run: terraform init -input=false -backend-config="bucket=${{ secrets.tf_bucket_name }}" -backend-config="key=hack-saltillo-ui/terraform.tfstate" -backend-config="region=us-east-1" -backend-config="encrypt=true" -backend-config="use_lockfile=true"
+
+      - name: Read deployment targets
+        id: terraform
+        working-directory: terraform
+        run: |
+          echo "site_bucket_name=$(terraform output -raw site_bucket_name)" >> "$GITHUB_OUTPUT"
+          echo "cloudfront_distribution_id=$(terraform output -raw cloudfront_distribution_id)" >> "$GITHUB_OUTPUT"
+
+      - name: Sync site to S3
+        env:
+          SITE_BUCKET_NAME: ${{ steps.terraform.outputs.site_bucket_name }}
+        run: aws s3 sync dist/ "s3://${SITE_BUCKET_NAME}" --delete
+
+      - name: Invalidate CloudFront cache
+        env:
+          DISTRIBUTION_ID: ${{ steps.terraform.outputs.cloudfront_distribution_id }}
+        run: aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths '/*'
