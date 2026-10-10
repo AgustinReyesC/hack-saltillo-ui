@@ -158,3 +158,5 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin:0}dt{color:va
 .actions3 button.big{justify-content:flex-start;gap:14px;background:#fff;color:var(--text);border:1px solid var(--line);box-shadow:var(--shadow-sm)}
 .actions3 button.big svg{color:var(--green-d)}
 .actions3 button.big:hover:not(:disabled){background:#f8fafc;border-color:#cbd5e1}
+.barcode-view{width:100%;min-height:260px;background:#000;border:3px solid var(--yellow);overflow:hidden}
+.barcode-view video{width:100%;object-fit:cover}
